@@ -23,7 +23,7 @@ class CarManager:
     
     @classmethod
     def add_car(cls, make, model, year, mileage, services=[]):
-        new_cars = cls(make, model, year, mileage, services)
+        cls(make, model, year, mileage, services)
         print("\nCar added successfully!")
         time.sleep(1)
         input("\nPress Enter to return to the main menu...")
@@ -57,6 +57,7 @@ def get_choice():
     except ValueError:
         print("\nInvalid selection, must be a number!")
         time.sleep(2)
+
 
 # Get car ID
 def get_car_id():
