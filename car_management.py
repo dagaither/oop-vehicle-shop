@@ -1,18 +1,18 @@
 import time
 
-# CarManager class
 class CarManager:
     all_cars = []
     total_cars = 0
+    terminal = None
 
-    def __init__(self, make, model, year, mileage, servivces=[]):
+    def __init__(self, make, model, year, mileage, services=[]):
         self._id = CarManager.total_cars
         CarManager.total_cars += 1
         self._make = make
         self._model = model
         self._year = year
         self._mileage = mileage
-        self._services = servivces
+        self._services = services
         CarManager.all_cars.append(self)
 
     def __repr__(self):
@@ -24,139 +24,163 @@ class CarManager:
     @classmethod
     def add_car(cls, make, model, year, mileage, services=[]):
         cls(make, model, year, mileage, services)
+        cls.terminal.clear()
         print("\nCar added successfully!")
-        time.sleep(1)
-        input("\nPress Enter to return to the main menu...")
-
-
-# Print main menu
-def print_menu():
-    print(
-    """
-    --- WELCOME ---
-    1. Add a car
-    2. View all cars
-    3. View total number of cars
-    4. See a car's details
-    5. Service a car
-    6. Update mileage
-    7. Quit
-    """)
-
-
-# Allow user to make a menu selection
-def get_choice():
-    user_choice = input("Make a selection (1-7): ")
-    try:
-        user_choice = int(user_choice)
-        if user_choice in range(1, 8):
-            return user_choice
-        else:
-            print("\nInvalid selection!")
-            time.sleep(1)
-    except ValueError:
-        print("\nInvalid selection, must be a number!")
         time.sleep(2)
 
+    @classmethod
+    def print_menu(cls):
+        cls.terminal.clear()
+        print(
+        """
+        --- WELCOME ---
+        1. Add a car
+        2. View all cars
+        3. View total number of cars
+        4. See a car's details
+        5. Service a car
+        6. Update mileage
+        7. Quit
+        """)
 
-# Get car ID
-def get_car_id():
-    while True:
-        car_id = input("\nEnter car ID: ")
+    @classmethod
+    def get_choice(cls):
+        user_choice = input("Make a selection (1-7): ")
         try:
-            car_id = int(car_id)
-            if car_id < len(CarManager.all_cars):
-                return car_id
+            user_choice = int(user_choice)
+            if user_choice in range(1, 8):
+                return user_choice
             else:
-                print("\nInvalid car ID!")
+                cls.terminal.clear()
+                print("\nInvalid selection!")
                 time.sleep(1)
         except ValueError:
+            cls.terminal.clear()
             print("\nInvalid selection, must be a number!")
             time.sleep(2)
 
+    @classmethod
+    def get_car_id(cls):
+        while True:
+            car_id = input("\nEnter car ID: ")
+            try:
+                car_id = int(car_id)
+                if car_id < len(cls.all_cars):
+                    return car_id
+                else:
+                    cls.terminal.clear()
+                    print("\nInvalid car ID!")
+                    time.sleep(1)
+            except ValueError:
+                cls.terminal.clear()
+                print("\nInvalid selection, must be a number!")
+                time.sleep(2)
 
-# Add new car
-def add_car():
-    print("\n --- Add Car ---")
-    make = input("Enter make: ")
-    model = input("Enter model: ")
-    year = input("Enter year: ")
-    mileage = input("Enter vehicle mileage: ")
-    CarManager.add_car(make, model, year, mileage)
+    @classmethod
+    def add_service(cls):
+        car_id = cls.get_car_id()
+        service = input("\nEnter the service to add to the vehicle's record: ")
+        cls.all_cars[car_id]._services.append(service)
+        cls.terminal.clear()
+        print("\nService added!")
+        time.sleep(2)
 
+    @classmethod
+    def update_mileage(cls):
+        car_id = cls.get_car_id()
+        mileage = input("\nEnter updated mileage: ")
+        try:
+            if int(mileage) > int(cls.all_cars[car_id]._mileage):
+                cls.all_cars[car_id]._mileage = mileage
+                cls.terminal.clear()
+                print("\nMileage updated!")
+                time.sleep(2)
+                    
+            else:
+                cls.terminal.clear()
+                print("Can't roll back an odometer!")
+                time.sleep(2)
+        except ValueError:
+            cls.terminal.clear()
+            print("Mileage must be an integer.")
+            time.sleep(2)
 
-# View car inventory
-def view_cars():
-    print("\n--- Car Inventory ---")
-    for car in CarManager.all_cars:
-        print(car.details())
-    input("\nPress Enter to return to the main menu...")
+    @classmethod
+    def main(cls):
+        while True:
+            cls.print_menu()
+            choice = cls.get_choice()
 
+            if choice == 1:
+                make = input("Enter make: ")
+                model = input("Enter model: ")
+                year = input("Enter year: ")
+                mileage = input("Enter vehicle mileage: ")
+                cls.add_car(make, model, year, mileage)
 
-# Get total number of car
-def view_num_cars():
-    print("\n--- Cars Total ---")
-    print(f"\nThere are currently {len(CarManager.all_cars)} cars in inventory.")
-    input("\nPress Enter to return to the main menu...")
+            elif choice == 2:
+                cls.view_cars()
 
+            elif choice == 3:
+                cls.view_num_cars()
 
-# View specific car details
-def view_car_details():
-    car_id = get_car_id()
-    print("\n--- Car Details ---")
-    print(CarManager.all_cars[car_id])
-    input("\nPress Enter to return to the main menu...")
+            elif choice == 4:
+                cls.view_car_details()
 
+            elif choice == 5:
+                cls.add_service()
 
-#  Add service record
-def add_service():
-    car_id = get_car_id()
-    service = input("\nEnter the service to add to the vehicle's record: ")
-    CarManager.all_cars[car_id]._services.append(service)
-    print("\nService added!")
-    time.sleep(2)
+            elif choice == 6:
+                cls.update_mileage()
 
+            elif choice == 7:
+                return
 
-#  Update mileage
-def update_mileage():
-    car_id = get_car_id()
-    mileage = input("\nEnter updated mileage: ")
-    CarManager.all_cars[car_id]._mileage = mileage
-    print("\nMileage updated!")
-    time.sleep(2)
+    @classmethod
+    def view_cars(cls):
+        cls.terminal.clear()
+        print("\n--- Car Inventory ---")
+        for car in cls.all_cars:
+            print(car.details())
+        cls.terminal.pause("\nPress Enter to return to the main menu...")
 
-  
-#  Main menu
-def main():
-    while True:
-        print_menu()
-        choice = get_choice()
-        
-        if choice == 1:
-            add_car()
+    @classmethod
+    def view_num_cars(cls):
+        cls.terminal.clear()
+        print("\n--- Cars Total ---")
+        if len(cls.all_cars) == 1:
+            print(f"\nThere is currently 1 car in inventory.")
+        else:
+            print(f"\nThere are currently {len(cls.all_cars)} cars in inventory.")
+        cls.terminal.pause("\nPress Enter to return to the main menu...")
 
-        elif choice == 2:
-            view_cars()
+    @classmethod
+    def view_car_details(cls):
+        car_id = cls.get_car_id()
+        cls.terminal.clear()
+        print("\n--- Car Details ---")
+        print(cls.all_cars[car_id])
+        cls.terminal.pause("\nPress Enter to return to the main menu...")
 
-        elif choice == 3:
-            view_num_cars()
+    @staticmethod
+    def mileage_str_to_int(self, mileage):
+        stripped_mileage = ""
+        for i in mileage:
+            if i.isnum():
+                stripped_mileage += i
+        return int(stripped_mileage)
 
-        elif choice == 4:
-            view_car_details()
+class Terminal:
+    @staticmethod
+    def clear():
+        print("\033c", end="")
 
-        elif choice == 5:
-            add_service()
+    @staticmethod
+    def pause(message):
+        input(message)
 
-        elif choice == 6:
-            update_mileage()
+# Setting the terminal for CarManager
+CarManager.terminal = Terminal()
 
-        elif choice == 7:
-            return
-
-    
-
-car1 = CarManager("Toyota", "Camry", "2024", "100")
-car2 = CarManager("Nissan", "Pathfinder", "2019", "29,500")
-car3 = CarManager("Pontiac", "Trans Am", "1998", "210,000")
-
-main()
+# Running the main loop
+CarManager.main()
