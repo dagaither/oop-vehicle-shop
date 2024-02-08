@@ -163,7 +163,7 @@ class CarManager:
         cls.terminal.pause("\nPress Enter to return to the main menu...")
 
     @staticmethod
-    def mileage_str_to_int(self, mileage):
+    def mileage_str_to_int(mileage):
         stripped_mileage = ""
         for i in mileage:
             if i.isnum():
